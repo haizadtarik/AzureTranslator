@@ -1,0 +1,4 @@
+azure-cognitiveservices-vision-computervision
+requests
+uuid
+time
