@@ -12,12 +12,12 @@ file_url = 'https://api.telegram.org/file/bot'+TOKEN+'/'
 
 # =========== Setup CV client ============
 endpoint = '<AZURE-COMPUTER-VISION-ENDPOINT>'
-key = '<AZURE-COMPUTER-VISION-SUBSSCRIPTION-KEY>'
+key = '<AZURE-COMPUTER-VISION-SUBSCRIPTION-KEY>'
 credentials = CognitiveServicesCredentials(key)
 client = ComputerVisionClient(endpoint, credentials)
 
 # =========== Setup translator client ============
-subscriptionKey = '<AZURE-TRANSLATE-SUBSSCRIPTION-KEY>'
+subscriptionKey = '<AZURE-TRANSLATE-SUBSCRIPTION-KEY>'
 base_url = 'https://api.cognitive.microsofttranslator.com/translate?api-version=3.0'
 languages = {'en':'english', 'pt':'portuguese','es':'spanish'}
 headers = {
