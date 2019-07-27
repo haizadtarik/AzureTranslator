@@ -1,11 +1,11 @@
-# AzureTranslator
+# TranslatorBot
 Telegram Bot that can translate text on image using Azure cognitive services API.
 
 ## Setup
 1. This project require you to have python 3.x, Telegram account and Azure account with active subscription to cognitive service
 2. Download the repository or use Git to clone it :
 ```
-git clone https://github.com/haizadtarik/AzureTranslator
+git clone https://github.com/haizadtarik/TranslatorBot
 ```
 3. Install dependencies
 ```
@@ -25,6 +25,11 @@ subscriptionKey = '<AZURE-TRANSLATE-SUBSSCRIPTION-KEY>'
 ```
 5. Run the code and the Bot can now be used in Telegram.
 
+## Demo
+https://t.me/azure_translatorBot
+
 ## Resources
 1. [Telegram Bot](https://core.telegram.org/bots)
 2. [Azure Cognitive Services](https://docs.microsoft.com/en-us/azure/cognitive-services/)
+
+
