@@ -12,20 +12,19 @@ file_url = 'https://api.telegram.org/file/bot'+TOKEN+'/'
 
 # =========== Setup CV client ============
 endpoint = '<AZURE-COMPUTER-VISION-ENDPOINT>'
-key = '<AZURE-COMPUTER-VISION-SUBSCRIPTION-KEY>'
+key = '<AZURE-COMPUTER-VISION-SUBSSCRIPTION-KEY>'
 credentials = CognitiveServicesCredentials(key)
 client = ComputerVisionClient(endpoint, credentials)
 
 # =========== Setup translator client ============
-subscriptionKey = '<AZURE-TRANSLATE-SUBSCRIPTION-KEY>'
+subscriptionKey = '<AZURE-TRANSLATE-SUBSSCRIPTION-KEY>'
 base_url = 'https://api.cognitive.microsofttranslator.com/translate?api-version=3.0'
-languages = {'en':'english', 'pt':'portuguese','es':'spanish'}
+languages = {'de':'german', 'it':'italian', 'en':'english', 'ms':'malay', 'pt':'portuguese','es':'spanish', 'id':'indonesian'}
 headers = {
     'Ocp-Apim-Subscription-Key': subscriptionKey,
     'Content-type': 'application/json',
     'X-ClientTraceId': str(uuid.uuid4())
 }
-
 def get_message():
     response = requests.get(bot + 'getUpdates', data={'timeout': 100, 'offset': None})
     results = response.json()['result']
@@ -39,6 +38,12 @@ def get_message():
         file_path = file_info.json()['result']['file_path']
         data = file_url + file_path
         data_type = 'image'
+    elif 'voice' in results[latest_update]['message'].keys(): 
+        file_id = results[latest_update]['message']['voice']["file_id"]
+        file_info = requests.get(bot + 'getFile', params={"chat_id": chat_id, "file_id": file_id})
+        file_path = file_info.json()['result']['file_path']
+        data = file_url + file_path
+        data_type = 'audio'
     else: 
         data = results[latest_update]['message']['text']
         data_type = 'text'
@@ -53,14 +58,14 @@ def recognize(photo_url):
         image_analysis = client.get_text_operation_result(operation_id)
     sentence = ''
     for line in image_analysis.recognition_result.lines:
-        sentence = sentence + ' ' + line.text
+        sentence = sentence + line.text + '\n'
     return sentence
 
 def translate(url, text):
     body = [{'text': text}]
     request = requests.post(url, headers=headers, json=body)
-    translated = 'Translated from ' + str(languages[request.json()[0]['detectedLanguage']['language']]) + ' to ' + str(languages[request.json()[0]['translations'][0]['to']]) + ':\n' + str(request.json()[0]['translations'][0]['text'])
-    return translated
+    translated = 'Translated from ' + str(languages[request.json()[0]['detectedLanguage']['language']]) + ' to '+ str(languages[request.json()[0]['translations'][0]['to']]) +':\n' + str(request.json()[0]['translations'][0]['text'])
+    return translated 
 
 def send_message(chat, reply_text):
     params = {'chat_id': chat, 'text': reply_text}
@@ -81,7 +86,9 @@ def main():
                 else:
                     reply = 'Error! Plese use other image'
                     send_message(chat_id, reply)
-
+            elif message_type == 'audio':
+                reply = 'Invalid input. Please send an image'
+                send_message(chat_id, reply)
             else:
                 if message == '/start':
                     reply = 'Hi! I am Visual Translator Bot.\nSend a picture to start translation.'
@@ -94,12 +101,24 @@ def main():
                     translate_url = base_url + '&to=es'
                     reply = 'Language set to Spanish'
                     send_message(chat_id, reply)
+                elif message == '/german':
+                    translate_url = base_url + '&to=de'
+                    reply = 'Language set to German'
+                    send_message(chat_id, reply)
+                elif message == '/italian':
+                    translate_url = base_url + '&to=it'
+                    reply = 'Language set to Italian'
+                    send_message(chat_id, reply)
+                elif message == '/malay':
+                    translate_url = base_url + '&to=ms'
+                    reply = 'Language set to Malay'
+                    send_message(chat_id, reply)
                 elif message == '/portuguese':
                     translate_url = base_url + '&to=pt'
                     reply = 'Language set to Portuguese'
                     send_message(chat_id, reply)
                 elif message == '/help':
-                    reply = 'Send an image to start translation or send  /english , /spanish or /portuguese to set the desired translated language.'
+                    reply = 'Send an image to start translation or send  /english , /spanish , /german , /italian , /malay or /portuguese to set the desired translated language.'
                     send_message(chat_id, reply)
                 else:
                     reply = 'Invalid input. Please send an image'
