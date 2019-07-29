@@ -25,6 +25,7 @@ headers = {
     'Content-type': 'application/json',
     'X-ClientTraceId': str(uuid.uuid4())
 }
+
 def get_message():
     response = requests.get(bot + 'getUpdates', data={'timeout': 100, 'offset': None})
     results = response.json()['result']
@@ -64,7 +65,19 @@ def recognize(photo_url):
 def translate(url, text):
     body = [{'text': text}]
     request = requests.post(url, headers=headers, json=body)
-    translated = 'Translated from ' + str(languages[request.json()[0]['detectedLanguage']['language']]) + ' to '+ str(languages[request.json()[0]['translations'][0]['to']]) +':\n' + str(request.json()[0]['translations'][0]['text'])
+    if request.json()[0]['detectedLanguage']['language'] in languages.keys():
+        from_lang = str(languages[request.json()[0]['detectedLanguage']['language']])
+    else:
+        from_lang = 'unknown'
+    if request.json()[0]['translations'][0]['to'] in languages.keys():
+        to_lang = str(languages[request.json()[0]['translations'][0]['to']])
+    else:
+        to_lang = 'unknown'
+    if len(str(request.json()[0]['translations'][0]['text']))>1:
+        translated_text = str(request.json()[0]['translations'][0]['text'])
+    else:
+        translated_text: 'UNABLE TO TRANSLATE'
+    translated = 'Translated from ' + from_lang + ' to '+ to_lang + ':\n' + translated_text 
     return translated 
 
 def send_message(chat, reply_text):
@@ -118,7 +131,7 @@ def main():
                     reply = 'Language set to Portuguese'
                     send_message(chat_id, reply)
                 elif message == '/help':
-                    reply = 'Send an image to start translation or send  /english , /spanish , /german , /italian , /malay or /portuguese to set the desired translated language.'
+                    reply = 'Send an image to start translation or send  /english , /spanish or /portuguese to set the desired translated language.'
                     send_message(chat_id, reply)
                 else:
                     reply = 'Invalid input. Please send an image'
