@@ -1,4 +1,4 @@
-# TranslatorBot
+# Visual Translator Bot
 Telegram Bot that can translate text on image using Azure cognitive services API.
 
 ## Setup
